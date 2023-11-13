@@ -2,30 +2,19 @@
 #include <WiFiClientSecure.h>
 #include <MQTTClient.h>
 #include "LCD1602A_Display.h"
-#include "secrets.h"
+
+// #include "ESP32_13672224_secrets.h"
+#include "ESP32_13576052_secrets.h"
 
 //-------------------------------------
 //             Constants
 //-------------------------------------
 
-// Input Device Constants v1
-#define ENCODER_CLOCK 19 // Labeled CLK
-#define ENCODER_DATA 18 // Labeled DT
-#define ENCODER_SWITCH 15 // Labeled SW
+// Input Device Constants v2
+#define ENCODER_CLOCK 25 // Labeled CLK
+#define ENCODER_DATA 33 // Labeled DT
+#define ENCODER_SWITCH 32 // Labeled SW
 #define SEND_BUTTON 23
-
-// // Input Device Constants v2
-// #define ENCODER_CLOCK 25 // Labeled CLK
-// #define ENCODER_DATA 33 // Labeled DT
-// #define ENCODER_SWITCH 32 // Labeled SW
-// #define SEND_BUTTON 23
-
-// AWS Constants
-#define THINGNAME "ESP32-13576052"
-
-
-// MQTT Constants
-#define TOPIC "flipsync_01"
 
 
 //-------------------------------------
@@ -92,19 +81,8 @@ void connectAWS(const char* topic) {
 
   Serial.println("Connecting to AWS IOT");
 
-  // Generate Board UID
-  uint32_t chipId = 0;
-  for(int i=0; i<17; i=i+8) {
-	  chipId |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
-	}
-  char* boardUID = new char[17];
-  sprintf(boardUID,"ESP32-%ld", chipId);
-  
-  Serial.print("BoardUID: ");
-  Serial.println(boardUID);
-
   // Connect to MQTT Client
-  while (!client.connect(boardUID)) {
+  while (!client.connect(THINGNAME)) {
     Serial.print(".");
     delay(100);
   }
@@ -217,10 +195,6 @@ bool encoderBtnPressed() {
   // false if button state is Low or less then 50ms 
   // have passed
   return encoderBtnPressed;
-}
-
-char* getBoardUID() {
-
 }
 
 
